@@ -22,6 +22,39 @@ public class UsersRepository {
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
 	
+	public Users findByUsernameAndPassword(String username , String password) {
+		final String SQL = "SELECT id, username, email, address, userProfile, userRole, createDate FROM users WHERE username = ? AND password = ?" ;
+		Users user = null;
+		try {
+			conn = DBConn.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+					
+			// 물을표 완성
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			
+			rs = pstmt.executeQuery();	
+			//if문 돌려서 오브젝트에 집어넣기
+			if(rs.next()) {
+				user = new Users();
+				user.setId(rs.getInt("id"));
+				user.setUsername(rs.getString("username"));
+				user.setEmail(rs.getString("email"));
+				user.setAddress(rs.getString("address"));
+				user.setUserProfile(rs.getString("userProfile"));
+				user.setUserRole(rs.getString("userRole"));
+				user.setCreateDate(rs.getTimestamp("createDate"));
+			}
+			return user;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(TAG + "findByUsernameAndPassword : " + e.getMessage());
+		} finally {
+			DBConn.close(conn,pstmt,rs);
+		}	
+		return null;
+	}
+	
 	public int save(Users user) {
 		final String SQL = "INSERT INTO users (id,username,password,email,address,userrole,createdate)VALUES(users_seq.nextval,?,?,?,?,?,sysdate)";
 		try {
