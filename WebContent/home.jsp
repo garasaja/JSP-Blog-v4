@@ -4,14 +4,7 @@
 
 <%@ include file = "include/nav.jsp" %>
 
-<%
-	Users principal = (Users)session.getAttribute("principal");
-%>
-<h1>
-	<% if(principal != null) { %>
-	<%= principal.getUsername() %>
-	<% } %>
-</h1>
+
 
 <div class = "container">
 	<div class="card m-2" style="width:100%">
