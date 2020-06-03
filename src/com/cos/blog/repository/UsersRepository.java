@@ -22,6 +22,29 @@ public class UsersRepository {
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
 	
+	public int findByUsername(String username) {
+		final String SQL = "SELECT count(*) FROM users WHERE username = ?" ;
+		try {
+			conn = DBConn.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+					
+			// 물을표 완성
+			pstmt.setString(1, username);
+			
+			rs = pstmt.executeQuery();	
+			//if문 돌려서 오브젝트에 집어넣기
+			if(rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(TAG + "findByUsername : " + e.getMessage());
+		} finally {
+			DBConn.close(conn,pstmt,rs);
+		}	
+		return -1;
+	}
+	
 	public Users findByUsernameAndPassword(String username , String password) {
 		final String SQL = "SELECT id, username, email, address, userProfile, userRole, createDate FROM users WHERE username = ? AND password = ?" ;
 		Users user = null;

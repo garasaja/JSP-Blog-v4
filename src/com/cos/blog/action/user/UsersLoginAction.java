@@ -14,6 +14,8 @@ public class UsersLoginAction implements Action{
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		String myCookie = request.getHeader("Cookie");
+		System.out.println("myCookie : " + myCookie);
 		Cookie[] cookies = request.getCookies();
 				if(cookies != null) {
 					for (Cookie cookie : cookies) {

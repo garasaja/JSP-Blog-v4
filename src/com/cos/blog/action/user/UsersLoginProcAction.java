@@ -14,7 +14,7 @@ import com.cos.blog.model.Users;
 import com.cos.blog.repository.UsersRepository;
 import com.cos.blog.util.Script;
 
-public class UsersJLoginProcAction implements Action{
+public class UsersLoginProcAction implements Action{
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 0 . 유효성 검사
@@ -40,7 +40,15 @@ public class UsersJLoginProcAction implements Action{
 			session.setAttribute("principal", user);
 			
 			if(request.getParameter("remember") != null) {
+				// key => Set-Cookie
+				// value => remember=ssar
 				Cookie cookie = new Cookie("remember", user.getUsername());
+				response.addCookie(cookie);
+				
+				//response.setHeader("Set-Cookie","remember=ssar");
+			} else {
+				Cookie cookie = new Cookie("remember","");
+				cookie.setMaxAge(0);
 				response.addCookie(cookie);
 			}
 			
