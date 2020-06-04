@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.cos.blog.db.DBConn;
 import com.cos.blog.model.Reply;
-import com.cos.blog.model.Users;
 
 //DAO
 public class ReplyRepository {
