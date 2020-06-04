@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.cos.blog.db.DBConn;
 import com.cos.blog.model.Board;
-import com.cos.blog.model.Users;
+
 
 //DAO
 public class BoardRepository {
@@ -24,24 +24,23 @@ public class BoardRepository {
 	private ResultSet rs = null;
 	
 	public int save(Board board) {
-		final String SQL = "INSERT INTO board (id,userid,title,content,readcount,createdate) values(?,?,?,?,?,?)";
+		final String SQL = "INSERT INTO board(id, userId, title, content, readCount, createDate) VALUES(board_seq.nextval, ?, ?, ?, ?, sysdate)";
+		
 		try {
 			conn = DBConn.getConnection();
 			pstmt = conn.prepareStatement(SQL);
-			// 물을표 완성
-			pstmt.setInt(1, board.getId());
-			pstmt.setInt(2, board.getUserId());
-			pstmt.setString(3, board.getTitle());
-			pstmt.setString(4, board.getContent());
-			pstmt.setInt(5, board.getReadcount());
-			//pstmt.setDate(6, board.getCreatedate());
+			// 물음표 완성하기
+			pstmt.setInt(1, board.getUserId());
+			pstmt.setString(2, board.getTitle());
+			pstmt.setString(3, board.getContent());
+			pstmt.setInt(4, board.getReadcount());
 			return pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(TAG + "save : " + e.getMessage());
+			System.out.println(TAG+"save : "+e.getMessage());
 		} finally {
-			DBConn.close(conn,pstmt);
-		}		
+			DBConn.close(conn, pstmt);
+		}
 		return -1;
 	}
 	
