@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cos.blog.db.DBConn;
+import com.cos.blog.dto.DetailResponseDto;
 import com.cos.blog.model.Board;
 
-
-//DAO
+// DAO
 public class BoardRepository {
+	
 	private static final String TAG = "BoardRepository : ";
 	private static BoardRepository instance = new BoardRepository();
 	private BoardRepository() {}
@@ -45,47 +46,55 @@ public class BoardRepository {
 	}
 	
 	public int update(Board board) {
-		final String SQL = "";
+		final String SQL = "UPDATE board SET title = ?, content = ? WHERE id = ?";
+		
 		try {
 			conn = DBConn.getConnection();
 			pstmt = conn.prepareStatement(SQL);
-			// 물을표 완성
-			
+			// 물음표 완성하기
+			pstmt.setString(1, board.getTitle());
+			pstmt.setString(2, board.getContent());
+			pstmt.setInt(3, board.getId());
 			return pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(TAG + "update : " + e.getMessage());
+			System.out.println(TAG+"update : "+e.getMessage());
 		} finally {
-			DBConn.close(conn,pstmt);
-		}		
+			DBConn.close(conn, pstmt);
+		}
+
 		return -1;
 	}
 	
 	public int deleteById(int id) {
-		final String SQL = "";
+		System.out.println("BoardRepository : id : "+id);
+		final String SQL = "DELETE FROM board WHERE id = ?";
+		
 		try {
 			conn = DBConn.getConnection();
 			pstmt = conn.prepareStatement(SQL);
-			// 물을표 완성
-			
+			// 물음표 완성하기
+			pstmt.setInt(1, id);
 			return pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(TAG + "delete : " + e.getMessage());
+			System.out.println(TAG+"deleteById : "+e.getMessage());
 		} finally {
-			DBConn.close(conn,pstmt);
-		}		
+			DBConn.close(conn, pstmt);
+		}
+
 		return -1;
 	}
-
+	
 	public List<Board> findAll() {
 		final String SQL = "SELECT * FROM board ORDER BY id DESC";
 		List<Board> boards = new ArrayList<>();
+		
 		try {
 			conn = DBConn.getConnection();
 			pstmt = conn.prepareStatement(SQL);
+			// while 돌려서 rs -> java오브젝트에 집어넣기
 			rs = pstmt.executeQuery();
-			//while문 돌려서 오브젝트에 집어넣기
 			while(rs.next()) {
 				Board board = new Board(
 						rs.getInt("id"),
@@ -94,37 +103,59 @@ public class BoardRepository {
 						rs.getString("content"),
 						rs.getInt("readCount"),
 						rs.getTimestamp("createDate")
-						);
+				);
 				boards.add(board);
 			}
+			
 			return boards;
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(TAG + "find : " + e.getMessage());
+			System.out.println(TAG+"findAll : "+e.getMessage());
 		} finally {
-			DBConn.close(conn,pstmt,rs);
-		}		
+			DBConn.close(conn, pstmt, rs);
+		}
+
 		return null;
 	}
-
-	public Board findById(int id) {
-		final String SQL = "";
-		Board board = new Board();
+	
+	public DetailResponseDto findById(int id) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT b.id, b.userId, b.title, b.content, b.readCount, b.createDate, u.username ");
+		sb.append("FROM board b INNER JOIN users u ");
+		sb.append("ON b.userId = u.id ");
+		sb.append("WHERE b.id = ?");
+		final String SQL = sb.toString();
+		DetailResponseDto dto = null;
+		
 		try {
 			conn = DBConn.getConnection();
 			pstmt = conn.prepareStatement(SQL);
+			// 물음표 완성하기 
+			pstmt.setInt(1, id);
+			// if 돌려서 rs -> java오브젝트에 집어넣기
 			rs = pstmt.executeQuery();
-			
-			// 물을표 완성
-			
-			//if문 돌려서 오브젝트에 집어넣기
-			return board;
+			if(rs.next()) {
+				dto = new DetailResponseDto();
+				Board board = Board.builder()
+						.id(rs.getInt(1))
+						.userId(rs.getInt(2))
+						.title(rs.getString(3))
+						.content(rs.getString(4))
+						.readcount(rs.getInt(5))
+						.createdate(rs.getTimestamp(6))
+						.build();
+				dto.setBoard(board);
+				dto.setUsername(rs.getString(7));
+				
+			}
+			return dto;
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(TAG + "find : " + e.getMessage());
+			System.out.println(TAG+"findById : "+e.getMessage());
 		} finally {
-			DBConn.close(conn,pstmt,rs);
-		}		
+			DBConn.close(conn, pstmt, rs);
+		}
+
 		return null;
 	}
 }
