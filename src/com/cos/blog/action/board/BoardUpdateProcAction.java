@@ -45,7 +45,7 @@ public class BoardUpdateProcAction implements Action{
 				.id(id)
 				.title(title)
 				.content(content)
-				.readcount(0)
+				.readCount(0)
 				.build();
 		
 		// 4번 BoardRepository연결해서 save(board)함수 호출		

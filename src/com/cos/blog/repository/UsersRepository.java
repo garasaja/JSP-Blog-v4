@@ -25,7 +25,7 @@ public class UsersRepository {
 	
 	public int findByUsername(String username) {
 		final String SQL = "SELECT count(*) FROM users WHERE username = ?";
-		Users user = null;
+
 		
 		try {
 			conn = DBConn.getConnection();

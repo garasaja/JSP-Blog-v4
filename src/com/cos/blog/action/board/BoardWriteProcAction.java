@@ -43,7 +43,7 @@ public class BoardWriteProcAction implements Action{
 				.userId(principal.getId())
 				.title(title)
 				.content(content)
-				.readcount(0)
+				.readCount(0)
 				.build();
 		
 		// 4번 BoardRepository연결해서 save(board)함수 호출		

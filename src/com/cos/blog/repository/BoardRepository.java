@@ -24,6 +24,60 @@ public class BoardRepository {
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
 	
+	public List<Board> findAll(int page) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT /*+ INDEX_DESC(BOARD SYS_C007795)*/id,");
+		sb.append("userId,title,content,readCount,createDate ");
+		sb.append("FROM board ");
+		sb.append("OFFSET ? ROWS FETCH NEXT 3 ROWS ONLY");
+		final String SQL = sb.toString();
+		List<Board> boards = new ArrayList<>();
+		
+		try {
+			conn = DBConn.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, page*3);
+			// while 돌려서 rs -> java오브젝트에 집어넣기
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				Board board = new Board(
+						rs.getInt("id"),
+						rs.getInt("userId"),
+						rs.getString("title"),
+						rs.getString("content"),
+						rs.getInt("readCount"),
+						rs.getTimestamp("createDate")
+				);
+				boards.add(board);
+			}
+			
+			return boards;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(TAG+"findAll(page) : "+e.getMessage());
+		} finally {
+			DBConn.close(conn, pstmt, rs);
+		}
+
+		return null;
+	}
+	
+	public int UpdatereadCount(int id) {
+		final String SQL = "UPDATE board SET readCount = readCount + 1 WHERE id = ?";
+		try {
+			conn = DBConn.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, id);
+			return pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBConn.close(conn, pstmt);
+		}
+		
+		return -1;
+	}
+	
 	public int save(Board board) {
 		final String SQL = "INSERT INTO board(id, userId, title, content, readCount, createDate) VALUES(board_seq.nextval, ?, ?, ?, ?, sysdate)";
 		
@@ -34,7 +88,7 @@ public class BoardRepository {
 			pstmt.setInt(1, board.getUserId());
 			pstmt.setString(2, board.getTitle());
 			pstmt.setString(3, board.getContent());
-			pstmt.setInt(4, board.getReadcount());
+			pstmt.setInt(4, board.getReadCount());
 			return pstmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -141,8 +195,8 @@ public class BoardRepository {
 						.userId(rs.getInt(2))
 						.title(rs.getString(3))
 						.content(rs.getString(4))
-						.readcount(rs.getInt(5))
-						.createdate(rs.getTimestamp(6))
+						.readCount(rs.getInt(5))
+						.createDate(rs.getTimestamp(6))
 						.build();
 				dto.setBoard(board);
 				dto.setUsername(rs.getString(7));

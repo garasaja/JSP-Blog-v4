@@ -45,6 +45,7 @@ public class BoardController extends HttpServlet {
 		Action action = router(cmd);
 		action.execute(request, response);
 	}
+	
 	public Action router(String cmd) {
 		if(cmd.equals("home")) {
 			return new BoardHomeAction(); //Board의 목록

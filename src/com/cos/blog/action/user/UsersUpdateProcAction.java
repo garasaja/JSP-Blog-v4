@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import com.cos.blog.action.Action;
 import com.cos.blog.model.Users;
 import com.cos.blog.repository.UsersRepository;
+import com.cos.blog.util.SHA256;
 import com.cos.blog.util.Script;
 
 public class UsersUpdateProcAction implements Action{
@@ -37,7 +38,9 @@ public class UsersUpdateProcAction implements Action{
 		}
 		
 		int id = Integer.parseInt(request.getParameter("id"));
-		String password = request.getParameter("password");
+		//String password = request.getParameter("password");
+		String rawpassword = request.getParameter("password");
+		String password = SHA256.encodeSha256(rawpassword);
 		String email = request.getParameter("email");
 		String address = request.getParameter("address");
 		

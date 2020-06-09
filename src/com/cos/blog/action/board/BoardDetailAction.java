@@ -9,26 +9,47 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cos.blog.action.Action;
 import com.cos.blog.dto.DetailResponseDto;
-
 import com.cos.blog.repository.BoardRepository;
+import com.cos.blog.util.HtmlParser;
 import com.cos.blog.util.Script;
 
-public class BoardDetailAction implements Action{
+public class BoardDetailAction implements Action {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if(request.getParameter("id") ==null || request.getParameter("id").equals("")) {
+		if(
+				request.getParameter("id") == null || 
+				request.getParameter("id").equals("")
+		  ) {
 			Script.back("잘못된 접근입니다.", response);
 			return;
 		}
-	
-		int id = Integer.parseInt(request.getParameter("id"));
-		BoardRepository boardRepository = BoardRepository.getInstance();
-		DetailResponseDto dto = boardRepository.findById(id);
 		
+		int id = Integer.parseInt(request.getParameter("id"));
+		BoardRepository boardRepository = 
+				BoardRepository.getInstance();
+		
+		int result = boardRepository.UpdatereadCount(id);
+		if(result !=1) {
+			Script.back("잘못된 접근입니다.", response);
+			return;
+		}
+		
+		DetailResponseDto dto = 
+				boardRepository.findById(id);
+		System.out.println("BoardDetailAction: id : " + id);
+		System.out.println("BoardDetailAction: dto : " + dto);
+		
+
 		if(dto != null) {
+			// 유튜브 파싱하기
+			String content = dto.getBoard().getContent();
+			content = HtmlParser.getContentYoutube(content);
+			dto.getBoard().setContent(content);
+			
 			request.setAttribute("dto", dto);
-			RequestDispatcher dis = request.getRequestDispatcher("board/detail.jsp");
-					dis.forward(request, response);
+			RequestDispatcher dis = 
+					request.getRequestDispatcher("board/detail.jsp");
+			dis.forward(request, response);
 		} else {
 			Script.back("잘못된 접근입니다.", response);
 		}
