@@ -104,6 +104,26 @@ public class UsersRepository {
 		return -1;
 	}
 	
+	public int update(int id, String userProfile) {
+		final String SQL = "UPDATE users SET userProfile =? WHERE id = ?";
+		
+		try {
+			conn = DBConn.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			// 물음표 완성하기
+			pstmt.setString(1, userProfile);
+			pstmt.setInt(2, id);
+			return pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(TAG+"update(id,userProfile) : "+e.getMessage());
+		} finally {
+			DBConn.close(conn, pstmt);
+		}
+
+		return -1;
+	}
+	
 	public int update(Users user) {
 		final String SQL = "UPDATE users SET password = ?, email = ?, address = ? WHERE id = ?";
 		
@@ -184,6 +204,7 @@ public class UsersRepository {
 						.email(rs.getString("email"))
 						.address(rs.getString("address"))
 						.createDate(rs.getTimestamp("createDate"))
+						.userProfile(rs.getString("userProfile"))
 						.build();				
 			}
 			return user;

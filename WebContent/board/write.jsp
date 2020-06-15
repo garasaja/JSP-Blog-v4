@@ -2,7 +2,6 @@
 
 <%@ include file="../include/nav.jsp"%>
 
-  
 <%@ include file="../include/authentication.jsp"%>
 
 <div class="container">
@@ -10,12 +9,12 @@
 	
 		<div class="form-group">
 			<label for="title">Title:</label>
-			<input type="text" class="form-control" placeholder="title" id="title" name="title" required>
+			<input type="text" class="form-control" placeholder="title" id="title" name="title">
 		</div>
 	
 		<div class="form-group">
 			<label for="content">Content:</label>
-			<textarea id="summernote" class="form-control" rows="5" id="content" name="content" required></textarea>
+			<textarea id="summernote" class="form-control" rows="5" id="content" name="content"></textarea>
 		</div>
 	
 		<button type="submit" class="btn btn-primary">글쓰기 등록</button>
